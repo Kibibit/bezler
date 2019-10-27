@@ -1,5 +1,5 @@
 //@ts-check
-const { app, BrowserWindow, Tray, ipcMain, nativeTheme } = require('electron');
+const { app, BrowserWindow, Tray, ipcMain, nativeTheme, nativeImage } = require('electron');
 const path = require('path');
 const request = require('request-promise-native');
 // const Git = require('nodegit');
@@ -147,7 +147,9 @@ function createWindow () {
 }
 
 function createTray() {
-  tray = new Tray(path.join(assetsDirectory, 'sunTemplate.png'));
+  const iconPath = path.join(assetsDirectory, 'sunTemplate.png');
+  const trayIcon = nativeImage.createFromPath(iconPath);
+  tray = new Tray(trayIcon);
   tray.on('right-click', () => {
     console.log('inside right click!');
     return window.openDevTools({mode: 'detach'});
