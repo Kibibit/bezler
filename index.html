@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Weather</title>
+  <link href="fonts/material-icons.css"
+        rel="stylesheet">
+  <link href="fonts/fonts.css"
+        rel="stylesheet">
+  <link rel="stylesheet"
+        href="./node_modules/material-design-lite/material.min.css">
+  <link rel="stylesheet"
+        href="./style.css"
+        media="screen"
+        charset="utf-8">
+  <script src="./node_modules/material-design-lite/material.min.js"></script>
+  <script charset="utf-8">
+    require('./script')
+  </script>
+</head>
+
+<body>
+  <div class="tray-app-triangle"></div>
+  <div class="tray-app">
+    <div class="topbar">
+      Bezel Pack Utility
+      <button id="demo-menu-lower-right"
+              style="position: absolute; right: 0;"
+              class="mdl-button mdl-js-button mdl-button--icon">
+        <i class="material-icons">more_vert</i>
+      </button>
+
+      <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+          for="demo-menu-lower-right">
+        <li class="mdl-menu__item">
+          <i class="material-icons">
+            whatshot
+          </i>
+          Go to blog
+        </li>
+        <li class="mdl-menu__item">
+          <i style="width: 24px;"><img src="./node_modules/simple-icons/icons/github.svg"></i>
+          Go to Repository
+        </li>
+        <li class="mdl-menu__item mdl-menu__item--full-bleed-divider">
+          <i class="material-icons">
+            update
+          </i>Check for update
+        </li>
+        <li class="mdl-menu__item">
+          <i class="material-icons">
+            info
+          </i> About
+        </li>
+      </ul>
+    </div>
+    <div class="main">
+      <label for="enable"
+             class="mdl-switch mdl-js-switch mdl-js-ripple-effect">
+        <input type="checkbox"
+               id="enable"
+               class="mdl-switch__input">
+        <span class="mdl-switch__label">Enabled</span>
+      </label>
+      <button class="button is-rounded is-warning">Set update time</button>
+    </div>
+  </div>
+</body>
+
+</html>
