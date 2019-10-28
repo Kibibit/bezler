@@ -1,5 +1,5 @@
 //@ts-check
-const { app, BrowserWindow, Tray, ipcMain, nativeTheme, nativeImage } = require('electron');
+const { app, BrowserWindow, Tray, ipcMain, nativeTheme, nativeImage, screen } = require('electron');
 const path = require('path');
 const request = require('request-promise-native');
 // const Git = require('nodegit');
@@ -135,6 +135,7 @@ function createWindow () {
     frame: false,
     show: false,
     transparent: true,
+    alwaysOnTop: true,
     webPreferences: {
       nodeIntegration: true
     }
@@ -180,6 +181,9 @@ function toggleWindow() {
 function showWindow() {
   const position = getWindowPosition();
   window.setPosition(position.x, position.y, false);
+  // update UI on tray position to change arrow
+  console.log(position);
+  window.webContents.send('window-location-update', position);
   window.show();
   window.focus();
 }
@@ -187,14 +191,35 @@ function showWindow() {
 function getWindowPosition() {
   const windowBounds = window.getBounds();
   const trayBounds = tray.getBounds();
+  const screenBounds = screen.getDisplayMatching(windowBounds).bounds;
+
+  console.log('screen bounds are: ', screenBounds);
+  console.log('tray bounds are: ', trayBounds);
+  console.log('window bounds are: ', windowBounds);
+
+  // window position is bottom then ontop.check if window + tray location
+  // extends the screen size
+  const bottomPositionStartX = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+  const bottomPositionEndX = Math.round(trayBounds.x + (trayBounds.width / 2 ) + (windowBounds.width / 2));
+  const bottomPositionStartY = trayBounds.y + trayBounds.height + 4;
+  const bottomPositionEndY = trayBounds.y + trayBounds.height + 4 + windowBounds.height;
+  const isBottomOutOfScreenBoundsX = bottomPositionEndX > screenBounds.width || bottomPositionStartX < screenBounds.x;
+  const isBottomOutOfScreenBoundsY = bottomPositionEndY > screenBounds.height || bottomPositionStartY < screenBounds.y;
+
+  console.log('is out of bound? X ', isBottomOutOfScreenBoundsX);
+  console.log('is out of bound? Y ', isBottomOutOfScreenBoundsY);
 
   // Center window horizontally below the tray icon
   const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
 
   // Position window 4 pixels vertically below the tray icon
-  const y = Math.round(trayBounds.y + trayBounds.height + 4);
+  const y = isBottomOutOfScreenBoundsY ?
+    Math.round(trayBounds.y - 4 - windowBounds.height) :
+    Math.round(trayBounds.y + trayBounds.height + 4);
 
-  return {x: x, y: y};
+    console.log({ x, y });
+
+  return { x, y, isOnTop: isBottomOutOfScreenBoundsY };
 }
 
 function runDevUtilsIfNeeded() {

@@ -7,6 +7,7 @@ ipcRenderer.on('asynchronous-reply', (event, arg) => {
 });
 
 ipcRenderer.on('theme-changed', (event, arg) => changeTheme(arg));
+ipcRenderer.on('window-location-update', (event, position) => changeArrow(position))
 
 ipcRenderer.send('asynchronous-message', 'ping');
 
@@ -37,4 +38,17 @@ function changeTheme(shouldChangeToDark) {
   if (!body.classList.contains('light')) {
     body.classList.add('light');
   }
+}
+
+function changeArrow(position) {
+  const triangle = document.getElementsByTagName('body')[0];
+  const classToAdd = position.isOnTop ? 'top' : 'bottom';
+  const classToRemove = position.isOnTop ? 'bottom' : 'top';
+  
+  if (!triangle.classList.contains(classToAdd)) {
+    triangle.classList.add(classToAdd);
+    triangle.classList.remove(classToRemove);
+  }
+
+  console.log('arrow changed');
 }

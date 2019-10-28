@@ -9,11 +9,17 @@
 body {
   margin: 0;
   padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 body.light {
   --background-color: #fff;
   --text-color: #343c3d;
+}
+
+body.top {
+  flex-direction: column-reverse;
 }
 
 .tray-app {
@@ -37,6 +43,11 @@ body.light {
   border-right: 10px solid transparent;
 
   border-bottom: 10px solid var(--background-color);
+}
+
+body.top .tray-app-triangle {
+  border-top: 10px solid var(--background-color);
+  border-bottom: none;
 }
 
 .topbar,
