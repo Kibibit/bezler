@@ -189,46 +189,55 @@ function showWindow() {
 }
 
 function getWindowPosition() {
-  const windowBounds = window.getBounds();
-  const trayBounds = tray.getBounds();
-  const screenBounds = screen.getDisplayMatching(windowBounds).bounds;
+    const windowBounds = window.getBounds();
+    const trayBounds = tray.getBounds();
+    const screenBounds = screen.getDisplayMatching(trayBounds).bounds;
 
-  console.log('screen bounds are: ', screenBounds);
-  console.log('tray bounds are: ', trayBounds);
-  console.log('window bounds are: ', windowBounds);
+    // window position is bottom then ontop.check if window + tray location
+    // extends the screen size
+    // if tray icon position is in top half of the screen, put it on top
+    // if tray icon position is in bottom half of the screen, put it on bottom
+    // if X axis is clipped, put it on the side
+    const isTrayAtBottomHalf = (windowBounds.height / 2) < trayBounds.y;
+    
+    const bottomPositionStartX = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+    const bottomPositionEndX = Math.round(trayBounds.x + (trayBounds.width / 2 ) + (windowBounds.width / 2));
+    const bottomPositionStartY = trayBounds.y + trayBounds.height + 4;
+    const bottomPositionEndY = trayBounds.y + trayBounds.height + 4 + windowBounds.height;
+    const isXOutOfBoundLeft = bottomPositionStartX < screenBounds.x;
+    const isXOutOfBoundRight = bottomPositionEndX > screenBounds.width;
+    const isBottomOutOfScreenBoundsY = bottomPositionEndY > screenBounds.height || bottomPositionStartY < screenBounds.y;
 
-  // window position is bottom then ontop.check if window + tray location
-  // extends the screen size
-  const bottomPositionStartX = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
-  const bottomPositionEndX = Math.round(trayBounds.x + (trayBounds.width / 2 ) + (windowBounds.width / 2));
-  const bottomPositionStartY = trayBounds.y + trayBounds.height + 4;
-  const bottomPositionEndY = trayBounds.y + trayBounds.height + 4 + windowBounds.height;
-  const isBottomOutOfScreenBoundsX = bottomPositionEndX > screenBounds.width || bottomPositionStartX < screenBounds.x;
-  const isBottomOutOfScreenBoundsY = bottomPositionEndY > screenBounds.height || bottomPositionStartY < screenBounds.y;
+    console.log('is out of bound LEFT? X ', isXOutOfBoundLeft);
+    console.log('is out of bound RIGHT? X ', isXOutOfBoundRight);
+    console.log('is out of bound? Y ', isBottomOutOfScreenBoundsY);
 
-  console.log('is out of bound? X ', isBottomOutOfScreenBoundsX);
-  console.log('is out of bound? Y ', isBottomOutOfScreenBoundsY);
+    // Center window horizontally below the tray icon
+    const x = isXOutOfBoundLeft ?
+      (trayBounds.x + trayBounds.width + 4) : // put it on the right
+      (isXOutOfBoundRight ?
+        (trayBounds.x - windowBounds.width - 4) : // put it on the right
+        bottomPositionStartX); // put it in the middle
 
-  // Center window horizontally below the tray icon
-  const x = Math.round(trayBounds.x + (trayBounds.width / 2) - (windowBounds.width / 2));
+    // Position window 4 pixels vertically below the tray icon
+    const y = isXOutOfBoundLeft || isXOutOfBoundRight ?
+      Math.round(trayBounds.y + (trayBounds.height / 2) - (windowBounds.height / 2)) :
+      (isTrayAtBottomHalf ?
+        Math.round(trayBounds.y + trayBounds.height + 4) :
+        Math.round(trayBounds.y - 4 - windowBounds.height));
 
-  // Position window 4 pixels vertically below the tray icon
-  const y = isBottomOutOfScreenBoundsY ?
-    Math.round(trayBounds.y - 4 - windowBounds.height) :
-    Math.round(trayBounds.y + trayBounds.height + 4);
+      console.log({ x, y });
 
-    console.log({ x, y });
-
-  return { x, y, isOnTop: isBottomOutOfScreenBoundsY };
+    return { x, y, isOnTop: isBottomOutOfScreenBoundsY };
 }
 
 function runDevUtilsIfNeeded() {
   const isDev = require('electron-is-dev');
 
-if (isDev) {
-  console.log('Running in development');
-  // require('electron-css-reload')();
-} else {
-	console.log('Running in production');
-}
+  if (isDev) {
+    console.log('Running in development');
+    // require('electron-css-reload')();
+  } else {
+    console.log('Running in production');
+  }
 }
