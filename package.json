@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^7.0.0",
+    "electron": "^18.3.7",
     "electron-css-reload": "^1.0.8",
     "electron-rebuild": "^1.8.6",
     "get-google-fonts": "^1.2.0"
